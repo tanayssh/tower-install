@@ -1,9 +1,1 @@
----
-# vars file for config_aaa
 
-aaa_radius_server_ipv4_4: 10.50.4.7
-aaa_radius_auth_port: 1812
-aaa_radius_acct_port: 1813
-aaa_radius_timeout: 5
-aaa_radius_retransmit: 3
-aaa_radius_key: "Dod5Qby(X)sd"
