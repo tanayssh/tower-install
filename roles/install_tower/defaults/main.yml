@@ -1,0 +1,22 @@
+---
+packages: 
+  - python3-pip
+  - bash-completion
+  - bind-utils
+  - git
+  - NetworkManager-libnm
+  - nm-connection-editor
+  - libsemanage
+  - python3-policycoreutils
+  - python3-psycopg2
+  - unzip
+
+# static_routes: 
+#   - 10.0.0.0/8 172.20.64.1
+#   - 100.120.0.0/14 172.20.64.1
+#   - 172.20.64.0/24 172.20.64.1
+
+pip_package_libraries:
+  - urllib3
+  
+tower_extract_dir: "/var/tmp/ansible-tower"

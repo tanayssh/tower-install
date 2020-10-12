@@ -1,0 +1,75 @@
+---
+- name: install packages required
+  yum: 
+    name: "{{ packages }}"
+    state: present
+  become: yes
+
+# - name: configuring static routes
+#   command: "nmcli connection modify Wired\ connection\ 1 +ipv4.routes {{ item }}" 
+#   become: yes
+#   loop: "{{ static_routes }}"
+
+- name: install python libraries
+  pip: 
+    name: "{{ pip_package_libraries }}"
+    state: present
+    umask: "0022"
+  become: yes
+ 
+- name: ensure RDS connection
+  postgresql_ping: 
+    login_host: "localhost"
+    db: "AWX"
+    login_user: "pgadmin"
+    login_password: "redhat"
+
+#- name: set permissions for sudo to root
+#  command: rpm --setugids sudo && rpm --setperms sudo
+#  become: yes
+
+- name: set timezone to utc
+  timezone:
+    name: "{{ timezone | default('UTC') }}"
+
+#- name: register server through subscription manager
+#  redhat_subscription:
+#    state: present
+#    username: "{{ rhsm_username }}"
+#    password: "{{ rhsm_password }}"
+#    auto_attach: false
+
+#- name: subscribe to tower repo
+#  rhsm_repository:
+#    name: ansible-2.9-for-rhel-8-x86_64-rpms
+#    state: enabled
+
+- name: create tower directory
+  file:
+    path: "{{ tower_extract_dir }}"
+    state: directory
+    mode: 0700
+
+- name: download tower
+  unarchive:
+    remote_src: yes
+    src: https://releases.ansible.com/ansible-tower/setup-bundle/ansible-tower-setup-bundle-latest.tar.gz
+    dest: "{{ tower_extract_dir }}"
+
+- name: get installer path
+  find:
+    paths: "{{ tower_extract_dir }}"
+    patterns: ansible-tower-*
+    file_type: directory
+  register: installer_path
+
+- name: place inventory file
+  copy:
+    src: /home/ec2-user/tower-inventory
+    dest: "{{ installer_path.files[0].path }}/inventory"
+
+- name: install ansible tower
+  command: ./setup.sh -e required_ram=0 minimum_var_space=0
+  args:
+    chdir: "{{ installer_path.files[0].path }}"
+  become: yes

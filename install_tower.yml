@@ -1,0 +1,6 @@
+---
+- name: install ansible tower
+  hosts: localhost
+  become: yes
+  roles: 
+    - install_tower 
